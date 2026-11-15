@@ -71,6 +71,19 @@
 
 校验结果：各级概率与理论值相对误差 < 6%，七等奖中奖率 1/16.8，与官方公布的 1/16.6 吻合。
 
+## 发布与部署
+
+完整流程、踩坑记录与验证清单见 [docs/DEPLOY.md](docs/DEPLOY.md)。
+
+一键更新发布：
+
+```bash
+./scripts/publish.sh
+```
+
+> 部署结构：`main` 分支放源码，`gh-pages` 分支放构建产物，GitHub Pages 从 `gh-pages` 发布
+> （OAuth 授权不含 `workflow` 权限，因此不使用 GitHub Actions）。
+
 ## 开发
 
 ```bash
