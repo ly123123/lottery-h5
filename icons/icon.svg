@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="智选号码">
+  <defs>
+    <linearGradient id="gbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#141b30"/>
+      <stop offset="1" stop-color="#0a0f1f"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="115" fill="url(#gbg)"/>
+  <circle cx="166" cy="223" r="90" fill="#e8405a"/>
+  <circle cx="346" cy="223" r="90" fill="#3d7bff"/>
+  <circle cx="256" cy="376" r="69" fill="#f6c453"/>
+  <circle cx="136" cy="192" r="26" fill="#ffffff" opacity="0.42"/>
+  <circle cx="316" cy="192" r="26" fill="#ffffff" opacity="0.42"/>
+  <circle cx="234" cy="352" r="20" fill="#ffffff" opacity="0.42"/>
+</svg>
