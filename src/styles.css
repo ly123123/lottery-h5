@@ -68,7 +68,10 @@ h1, h2, h3, h4, p { margin: 0; }
 .brand p { font-size: 10px; color: var(--text-3); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ---------- 内容 ---------- */
-.content { flex: 1; padding: 14px 14px 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.content {
+  flex: 1; padding: 14px 14px 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0;
+  padding-bottom: calc(78px + var(--safe-b));
+}
 
 /* ---------- 通用卡片 ---------- */
 .card {
@@ -199,7 +202,8 @@ h1, h2, h3, h4, p { margin: 0; }
 
 /* ---------- 底部导航 ---------- */
 .tabbar {
-  position: sticky; bottom: 0; z-index: 25;
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 60;
+  max-width: 520px; margin: 0 auto;
   display: grid; grid-template-columns: repeat(4, 1fr);
   background: rgba(10, 15, 28, 0.92);
   backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4);
@@ -211,7 +215,7 @@ h1, h2, h3, h4, p { margin: 0; }
 .tab-label { font-size: 10px; color: var(--text-3); transition: color 0.2s; }
 .tab.active .tab-icon { filter: none; transform: translateY(-1px); }
 .tab.active .tab-label { color: var(--red-2); font-weight: 650; }
-.safe-bottom { height: 0; }
+
 
 /* ---------- 详情/提示 ---------- */
 .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-width: 0; }
@@ -265,3 +269,30 @@ h1, h2, h3, h4, p { margin: 0; }
 /* 图例 */
 .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 10.5px; color: var(--text-3); }
 .legend i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; margin-right: 4px; }
+/* ---------- 走势矩阵 ---------- */
+.matrix-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -4px; padding: 0 4px; }
+.matrix { display: grid; gap: 2px; min-width: 300px; }
+.matrix-cell { aspect-ratio: 1; border-radius: 2px; }
+.matrix-row-label { font-size: 8px; color: var(--text-3); display: grid; place-items: center; font-variant-numeric: tabular-nums; }
+.matrix-head { font-size: 8px; color: var(--text-3); text-align: center; font-variant-numeric: tabular-nums; }
+
+/* ---------- 概率条 ---------- */
+.prob-row { display: flex; align-items: center; gap: 7px; padding: 3px 0; }
+.prob-num { width: 22px; font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; flex: none; }
+.prob-track { flex: 1; height: 9px; border-radius: 5px; background: rgba(255,255,255,0.05); overflow: hidden; }
+.prob-fill { height: 100%; border-radius: 5px; transition: width .4s ease; }
+.prob-val { width: 40px; text-align: right; font-size: 10px; color: var(--text-3); font-variant-numeric: tabular-nums; flex: none; }
+
+/* ---------- 更新面板 ---------- */
+.update-panel { background: rgba(61,123,255,0.07); border: 1px solid rgba(61,123,255,0.22); border-radius: 12px; padding: 11px; margin-top: 10px; }
+.update-input {
+  width: 100%; padding: 9px 11px; border-radius: 10px; font-size: 13px;
+  background: rgba(0,0,0,0.28); border: 1px solid var(--line); color: var(--text);
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace; letter-spacing: 0.5px;
+}
+.update-input:focus { outline: none; border-color: rgba(61,123,255,0.5); }
+.update-preview { margin-top: 8px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+/* ---------- 分段进度 / 迷你图例 ---------- */
+.mini-legend { display: flex; gap: 10px; flex-wrap: wrap; font-size: 10px; color: var(--text-3); }
+.mini-legend i { width: 7px; height: 7px; border-radius: 2px; display: inline-block; margin-right: 3px; }

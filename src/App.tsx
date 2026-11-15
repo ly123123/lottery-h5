@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { loadDraws } from './lib/data';
+import { getExtraDraws, mergeDraws } from './lib/live';
 import type { GameKey } from './core/types';
 import { RULES } from './core/rules';
 import AnalysisPage from './pages/AnalysisPage';
@@ -25,7 +26,11 @@ export default function App() {
 
   useEffect(() => { localStorage.setItem('lottery.v1.game', game); }, [game]);
 
-  const draws = useMemo(() => loadDraws(game), [game]);
+  const [dataVersion, setDataVersion] = useState(0);
+  const draws = useMemo(
+    () => mergeDraws(loadDraws(game), getExtraDraws(game)),
+    [game, dataVersion],
+  );
   const rule = RULES[game];
 
   return (
@@ -46,7 +51,9 @@ export default function App() {
       </header>
 
       <main className="content">
-        {tab === 'analysis' && <AnalysisPage draws={draws} game={game} />}
+        {tab === 'analysis' && (
+          <AnalysisPage draws={draws} game={game} onDataChanged={() => setDataVersion((v) => v + 1)} />
+        )}
         {tab === 'predict' && <PredictPage draws={draws} game={game} />}
         {tab === 'picker' && <PickerPage draws={draws} game={game} />}
         {tab === 'me' && <MePage game={game} />}
