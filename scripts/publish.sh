@@ -4,13 +4,18 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-CONF=/Users/leo/Documents/depseek/.gh-config
+REPO="${GH_REPO:-ly123123/lottery-h5}"
+CONF="${GH_CONFIG_DIR:-$HOME/Documents/depseek/.gh-config}"
+
 if [ ! -f "$CONF/hosts.yml" ]; then
-  echo "❌ 未找到 GitHub 认证，请先执行："
-  echo "   export GH_CONFIG_DIR=$CONF && gh auth login --web"
+  echo "❌ 未找到 GitHub 认证（$CONF/hosts.yml）"
+  echo "   先执行："
+  echo "   export GH_CONFIG_DIR=$CONF HTTPS_PROXY=http://127.0.0.1:7897 BROWSER=echo"
+  echo "   gh auth login --hostname github.com --git-protocol https --web < /dev/null"
   exit 1
 fi
 TOKEN=$(sed -n 's/.*oauth_token: *//p' "$CONF/hosts.yml" | head -1)
+[ -z "$TOKEN" ] && { echo "❌ token 为空"; exit 1; }
 
 echo "▸ 类型检查与构建"
 npx tsc --noEmit
@@ -22,18 +27,16 @@ cp -R dist/. deploy-static/
 touch deploy-static/.nojekyll
 
 echo "▸ 推送 gh-pages"
-rm -rf /tmp/ghp && mkdir -p /tmp/ghp
-cd /tmp/ghp
+rm -rf /tmp/ghp-publish && mkdir -p /tmp/ghp-publish
+cp -R deploy-static/. /tmp/ghp-publish/
+cd /tmp/ghp-publish
 git init -q
-git config user.name leo
-git config user.email leo@local
-cp -R "$ROOT/deploy-static/." .
-touch .nojekyll
+git config user.name "${GIT_AUTHOR_NAME:-deploy}"
+git config user.email "${GIT_AUTHOR_EMAIL:-deploy@localhost}"
 git add -A
-git commit -q -m "更新发布 $(date '+%Y-%m-%d %H:%M')"
-git remote add origin "https://x-access-token:${TOKEN}@github.com/ly123123/lottery-h5.git"
+git commit -q -m "发布 $(date '+%Y-%m-%d %H:%M')"
+git remote add origin "https://x-access-token:${TOKEN}@github.com/${REPO}.git"
 git push -f origin HEAD:gh-pages
 
 echo ""
-echo "✅ 已发布：https://ly123123.github.io/lottery-h5/"
-echo "   （Pages 约 30 秒后生效，手机上重新打开即可）"
+echo "✅ 已发布：https://${REPO%%/*}.github.io/${REPO##*/}/"

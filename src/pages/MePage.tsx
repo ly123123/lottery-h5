@@ -140,8 +140,19 @@ export default function MePage({ game }: { game: GameKey }) {
           <div className="card-title"><span className="dot" />合规与风险提示</div>
         </div>
         <div className="alert danger">
-          彩票属于射幸游戏，中奖结果完全随机。本应用不销售、不代购彩票，不提供任何形式的资金通道，
-          所有号码与分析结果仅供娱乐参考，不构成投注建议。任何声称"必中""稳赚"的算法都是虚假宣传。
+          <b>合规声明</b><br />
+          本应用不销售、不代购、不代理任何彩票业务，不提供任何形式的投注、资金或兑奖通道。<br />
+          开奖数据来自官方公开发布的信息；号码与分析结果仅供娱乐与学习参考，<b>不构成任何投注建议</b>。
+        </div>
+        <div className="alert" style={{ marginTop: 8 }}>
+          <b>风险提示</b><br />
+          彩票属于射幸游戏，中奖结果完全随机，<b>任何算法都无法提高中奖概率</b>。
+          凡是宣称"必中""稳赚""内部消息"的，都是虚假宣传。请理性购彩，切勿沉迷。
+        </div>
+        <div className="alert ok" style={{ marginTop: 8 }}>
+          <b>隐私保护</b><br />
+          本应用不收集、不上传任何个人数据。收藏号码与录入记录只保存在本机浏览器，
+          无统计脚本、无广告、无第三方请求。清除浏览器数据即可彻底删除。
         </div>
         <div className="tiny" style={{ marginTop: 10, lineHeight: 1.8 }}>
           · 双色球单注 2 元，红球 6 个（1-33）+ 蓝球 1 个（1-16）<br />

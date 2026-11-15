@@ -19,7 +19,7 @@ main 分支放源码  →  gh-pages 分支放构建产物  →  Pages 从 gh-pag
 
 | 约束 | 报错原文 | 后果 | 应对 |
 | --- | --- | --- | --- |
-| 不能写 `~/.config` | `mkdir /Users/leo/.config/gh: operation not permitted` | `gh auth login` 无法写默认配置 | 用 `GH_CONFIG_DIR` 指向可写目录 |
+| 不能写 `~/.config` | `mkdir $HOME/.config/gh: operation not permitted` | `gh auth login` 无法写默认配置 | 用 `GH_CONFIG_DIR` 指向可写目录 |
 | 不能创建伪终端 | `script: openpty: Operation not permitted` | 无法给 `gh` 造 TTY | 用 `gh auth login --web < /dev/null`，它会在非 TTY 下直接进入设备码流程 |
 | 无 git credential helper | `fatal: could not read Username` | `git push` 无法认证 | 把 token 注入 remote URL |
 
@@ -30,7 +30,7 @@ main 分支放源码  →  gh-pages 分支放构建产物  →  Pages 从 gh-pag
 ### 步骤 1：申请设备授权码
 
 ```bash
-export GH_CONFIG_DIR=/Users/leo/Documents/depseek/.gh-config   # 必须放仓库目录之外！
+export GH_CONFIG_DIR=$HOME/Documents/depseek/.gh-config   # 必须放仓库目录之外！
 export HTTPS_PROXY=http://127.0.0.1:7897                        # GitHub 需要代理
 export BROWSER=echo                                             # 阻止弹出浏览器
 mkdir -p "$GH_CONFIG_DIR"
@@ -84,7 +84,7 @@ touch deploy-static/.nojekyll          # 阻止 Jekyll 忽略下划线开头的�
 # 2) 在临时目录建独立仓库推送，避免污染主工作区
 rm -rf /tmp/ghp && mkdir -p /tmp/ghp && cd /tmp/ghp
 git init -q && git config user.name leo && git config user.email leo@local
-cp -R "<项目路径>/deploy-static/." .
+cp -R "$PWD/deploy-static/." .
 touch .nojekyll
 git add -A && git commit -q -m "发布静态站点"
 git remote add origin "https://x-access-token:$TOKEN@github.com/<用户名>/<仓库名>.git"
@@ -241,7 +241,7 @@ npx vite preview --host 0.0.0.0 --port 4173
 
 ## 9. 安全提醒
 
-- token 明文存在 `/Users/leo/Documents/depseek/.gh-config/hosts.yml`
+- token 明文存在 `$HOME/Documents/depseek/.gh-config/hosts.yml`
 - **必须**确保该目录在 `.gitignore` 里，且位于仓库目录之外
 - 授权可在 https://github.com/settings/applications 随时撤销
 - token 会过期，过期后重新走步骤 1
