@@ -1,14 +1,47 @@
-import { useEffect, useState } from 'react';
-import type { GameKey } from '../core/types';
-import { RULES } from '../core/rules';
+import { useEffect, useMemo, useState } from 'react';
+import type { Draw, GameKey } from '../core/types';
+import { RULES, levelsFor } from '../core/rules';
 import { BallRow } from '../components/Ball';
 import { getTickets, removeTicket, type SavedTicket } from '../lib/store';
-import { DATA_META } from '../lib/data';
-import { computeAmount } from '../core/money';
+import { DATA_META, loadDraws } from '../lib/data';
+import { computeAmount, countHits, expandComplexHits } from '../core/money';
+
+/** 与最近一期开奖核对 */
+function checkWin(t: SavedTicket, last: Draw) {
+  const rule = RULES[t.game];
+  const lv = levelsFor(rule, last.code);
+  const { mainHit, specialHit } = countHits(t, last);
+  const isComplex = t.main.length > rule.mainCount || t.special.length > rule.specialCount;
+  if (!isComplex) {
+    const hit = lv.find((x) => x.combos.some((c) => c.main === mainHit && c.special === specialHit));
+    return {
+      mainHit, specialHit, isComplex,
+      level: hit?.level ?? null,
+      name: hit?.name ?? null,
+      total: hit?.fixed != null ? hit.fixed * t.multiple : null,
+      detail: null as null | ReturnType<typeof expandComplexHits>,
+    };
+  }
+  const detail = expandComplexHits(t.game, t.main.length, t.special.length, mainHit, specialHit, lv);
+  const total = detail.reduce((s, d) => s + (d.total ?? 0), 0) * t.multiple;
+  return {
+    mainHit, specialHit, isComplex,
+    level: detail[0]?.level ?? null,
+    name: detail[0]?.name ?? null,
+    total,
+    detail,
+  };
+}
 
 export default function MePage({ game }: { game: GameKey }) {
   const [tickets, setTickets] = useState<SavedTicket[]>([]);
   const [filter, setFilter] = useState<'all' | 'ssq' | 'dlt'>('all');
+
+  const lastDraws = useMemo(() => {
+    const ssq = loadDraws('ssq');
+    const dlt = loadDraws('dlt');
+    return { ssq: ssq[ssq.length - 1], dlt: dlt[dlt.length - 1] };
+  }, []);
 
   useEffect(() => { setTickets(getTickets()); }, []);
 
@@ -54,6 +87,21 @@ export default function MePage({ game }: { game: GameKey }) {
                 {t.label ? ` · ${t.label}` : ''}
                 · {new Date(t.createdAt).toLocaleDateString('zh-CN')}
               </div>
+              {(() => {
+                const last = t.game === 'ssq' ? lastDraws.ssq : lastDraws.dlt;
+                const w = checkWin(t, last);
+                const win = w.total != null && w.total > 0;
+                return (
+                  <div className="tiny" style={{ marginTop: 5, display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span className="chip" style={{ padding: '1px 6px' }}>第 {last.code} 期核对</span>
+                    <span style={{ color: win ? '#2fd18b' : '#64708f' }}>
+                      命中 {w.mainHit}+{w.specialHit}
+                      {w.isComplex && `（复式展开）`}
+                      {win ? ` → ${w.name}，约 ${w.total!.toLocaleString('zh-CN')} 元` : ' → 未中奖'}
+                    </span>
+                  </div>
+                );
+              })()}
             </div>
           );
         })}
@@ -73,6 +121,18 @@ export default function MePage({ game }: { game: GameKey }) {
           号码排序后再做组合约束过滤：和值落在历史 10%~90% 分位、奇偶与大小比例贴近历史分布、限制连号与跨度，
           并对生日号、递增数列、全小号等"大众化组合"降权，降低与他人重复导致的奖金摊薄。
         </div>
+      </div>
+
+      <div className="card">
+        <div className="card-hd">
+          <div className="card-title"><span className="dot" />安装到 iPhone</div>
+          <span className="card-sub">像 App 一样使用</span>
+        </div>
+        <div className="step"><span className="step-n">1</span>用 <b>Safari</b> 打开本页（微信/QQ 内置浏览器不支持安装）</div>
+        <div className="step"><span className="step-n">2</span>点击底部「分享」按钮 <span className="tiny">（方框 + 向上箭头）</span></div>
+        <div className="step"><span className="step-n">3</span>选择「添加到主屏幕」→ 右上角「添加」</div>
+        <div className="step"><span className="step-n">4</span>主屏幕出现「智选号码」图标，全屏运行、断网可用</div>
+        <div className="alert ok" style={{ marginTop: 10 }}>已支持离线：所有开奖数据与算法都打包在本地，无网络也能分析选号。</div>
       </div>
 
       <div className="card">

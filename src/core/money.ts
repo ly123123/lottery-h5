@@ -137,14 +137,10 @@ export function expandComplexHits(
       if (restMain > mainMiss) continue;
       const m = comb(mainHit, needMainHit) * comb(mainMiss, restMain);
       if (m === 0) continue;
-      let s = 0;
-      if (rule.specialCount === 1) {
-        s = 1;
-      } else {
-        const restSpecial = rule.specialCount - needSpecialHit;
-        if (restSpecial > specialMiss) continue;
-        s = comb(specialHit, needSpecialHit) * comb(specialMiss, restSpecial);
-      }
+      // 附加区同样按超几何展开：命中号码中取 needSpecialHit 个，落选号码中补足剩余名额
+      const restSpecial = rule.specialCount - needSpecialHit;
+      if (restSpecial > specialMiss) continue;
+      const s = comb(specialHit, needSpecialHit) * comb(specialMiss, restSpecial);
       count += m * s;
     }
     if (count > 0) {
